@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common/exceptions';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { AtualizarCategoriaDto } from './dtos/atualizar-categoria.dto';
 import { CriarCategoriaDto } from './dtos/criar-categoria.dto';
 import { Categoria } from './interfaces/categoria.interface';
 
@@ -45,5 +46,22 @@ export class CategoriasService {
     }
 
     return categoriaEncontrada;
+  }
+
+  async atualizarCategoria(
+    categoria: string,
+    atualizarCategoriaDto: AtualizarCategoriaDto,
+  ): Promise<void> {
+    const categoriaEncontrada = await this.categoriaModel
+      .findOne({ categoria })
+      .exec();
+
+    if (!categoriaEncontrada) {
+      throw new NotFoundException(`Categoria ${categoria} não encontrada!`);
+    }
+
+    await this.categoriaModel
+      .findOneAndUpdate({ categoria }, { $set: atualizarCategoriaDto })
+      .exec();
   }
 }
